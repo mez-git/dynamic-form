@@ -34,11 +34,26 @@ export default function DynamicFormUploader() {
   };
 
   // ----------------- Toggle Edit Mode -----------------
-  const toggleEditMode = (index) => {
-    const updated = [...fields];
-    updated[index].isEditing = !updated[index].isEditing;
-    setFields(updated);
-  };
+// ----------------- Toggle Edit Mode with Validation -----------------
+const toggleEditMode = (index) => {
+  const updated = [...fields];
+
+  // If currently editing, we are trying to save
+  if (updated[index].isEditing) {
+    const field = updated[index];
+
+    // Validation
+    if (!field.label || !field.type || (["text","number","email","password","date","select","radio","checkbox"].includes(field.type) && field.type !== "text" && field.options?.length === 0)) {
+      alert("Please fill all required fields and options before saving!");
+      return; // Prevent saving
+    }
+  }
+
+  // Toggle edit mode
+  updated[index].isEditing = !updated[index].isEditing;
+  setFields(updated);
+};
+
 
   // ----------------- Delete Field -----------------
   const deleteField = (index) => {
