@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "./DynamicFormUploader.css";
 
 export default function DynamicFormUploader() {
   const [fields, setFields] = useState([]);
@@ -13,7 +14,6 @@ export default function DynamicFormUploader() {
       try {
         const jsonData = JSON.parse(event.target.result);
         if (Array.isArray(jsonData)) {
-          // ensure each field has isEditing = false initially
           setFields(jsonData.map((f) => ({ ...f, isEditing: false })));
         } else {
           alert("JSON must be an array of objects.");
@@ -55,7 +55,7 @@ export default function DynamicFormUploader() {
         type: "text",
         required: false,
         options: [],
-        isEditing: true, // new fields open in edit mode
+        isEditing: true,
       },
     ]);
   };
@@ -70,7 +70,7 @@ export default function DynamicFormUploader() {
   };
 
   return (
-    <div style={{ padding: "20px", maxWidth: "800px", margin: "auto" }}>
+    <div className="form-uploader">
       <h1>Upload JSON & Generate Editable Form</h1>
 
       {/* Upload */}
@@ -78,12 +78,12 @@ export default function DynamicFormUploader() {
         type="file"
         accept=".json"
         onChange={handleFileUpload}
-        style={{ display: "block", margin: "10px 0" }}
+        className="file-input"
       />
 
       {/* Editable Form */}
       {fields.length > 0 && (
-        <div style={{ marginTop: "30px" }}>
+        <div>
           <h2>Editable Form</h2>
           <form onSubmit={handleSubmit}>
             {fields.map((field, index) => {
@@ -91,141 +91,103 @@ export default function DynamicFormUploader() {
                 field.name || field.label.toLowerCase().replace(/\s+/g, "_");
 
               return (
-                <div
-                  key={index}
-                  style={{
-                    marginBottom: "20px",
-                    border: "1px solid #ccc",
-                    padding: "15px",
-                    borderRadius: "8px",
-                    background: "#fafafa",
-                  }}
-                >
-                  {/* ----------------- Edit Mode ----------------- */}
-                  {field.isEditing ? (
-                    <>
-                      <input
-                        type="text"
-                        value={field.label}
-                        placeholder="Field Label"
-                        onChange={(e) =>
-                          updateField(index, "label", e.target.value)
-                        }
-                        style={{ width: "100%", marginBottom: "8px" }}
-                      />
-
-                      <input
-                        type="text"
-                        value={field.placeholder || ""}
-                        placeholder="Placeholder"
-                        onChange={(e) =>
-                          updateField(index, "placeholder", e.target.value)
-                        }
-                        style={{ width: "100%", marginBottom: "8px" }}
-                      />
-
-                      <select
-                        value={field.type}
-                        onChange={(e) =>
-                          updateField(index, "type", e.target.value)
-                        }
-                        style={{ width: "100%", marginBottom: "8px" }}
-                      >
-                        <option value="text">Text</option>
-                        <option value="number">Number</option>
-                        <option value="email">Email</option>
-                        <option value="password">Password</option>
-                        <option value="select">Select</option>
-                        <option value="radio">Radio</option>
-                        <option value="checkbox">Checkbox</option>
-                      </select>
-
-                      {(field.type === "select" ||
-                        field.type === "radio" ||
-                        field.type === "checkbox") && (
+                <div key={index} className="field-card">
+                  <div className="field-content">
+                    {field.isEditing ? (
+                      <div className="edit-fields">
                         <input
                           type="text"
-                          value={field.options?.join(", ") || ""}
-                          placeholder="Options (comma separated)"
+                          value={field.label}
+                          placeholder="Field Label"
                           onChange={(e) =>
-                            updateField(
-                              index,
-                              "options",
-                              e.target.value
-                                .split(",")
-                                .map((o) => o.trim())
-                                .filter(Boolean)
-                            )
+                            updateField(index, "label", e.target.value)
                           }
-                          style={{ width: "100%", marginBottom: "8px" }}
                         />
-                      )}
-
-                      <label>
                         <input
-                          type="checkbox"
-                          checked={field.required || false}
+                          type="text"
+                          value={field.placeholder || ""}
+                          placeholder="Placeholder"
                           onChange={(e) =>
-                            updateField(index, "required", e.target.checked)
+                            updateField(index, "placeholder", e.target.value)
                           }
-                        />{" "}
-                        Required
-                      </label>
-                    </>
-                  ) : (
-                    /* ----------------- View Mode ----------------- */
-                    <div>
-                      <strong>{field.label}</strong> <br />
-                      <small>
-                        Type: {field.type} |{" "}
-                        {field.required ? "Required" : "Optional"}
-                      </small>
-                      {field.placeholder && (
-                        <div>Placeholder: "{field.placeholder}"</div>
-                      )}
-                      {field.options?.length > 0 && (
-                        <div>Options: {field.options.join(", ")}</div>
-                      )}
+                        />
+                        <select
+                          value={field.type}
+                          onChange={(e) =>
+                            updateField(index, "type", e.target.value)
+                          }
+                        >
+                          <option value="text">Text</option>
+                          <option value="number">Number</option>
+                          <option value="email">Email</option>
+                          <option value="password">Password</option>
+                          <option value="select">Select</option>
+                          <option value="radio">Radio</option>
+                          <option value="checkbox">Checkbox</option>
+                        </select>
+
+                        {(field.type === "select" ||
+                          field.type === "radio" ||
+                          field.type === "checkbox") && (
+                          <input
+                            type="text"
+                            value={field.options?.join(", ") || ""}
+                            placeholder="Options (comma separated)"
+                            onChange={(e) =>
+                              updateField(
+                                index,
+                                "options",
+                                e.target.value
+                                  .split(",")
+                                  .map((o) => o.trim())
+                                  .filter(Boolean)
+                              )
+                            }
+                          />
+                        )}
+
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={field.required || false}
+                            onChange={(e) =>
+                              updateField(index, "required", e.target.checked)
+                            }
+                          />{" "}
+                          Required
+                        </label>
+                      </div>
+                    ) : (
+                      <div className="preview-field">
+                        <strong>{field.label}</strong>
+                      </div>
+                    )}
+
+                    {/* Actions */}
+                    <div className="field-actions">
+                      <button
+                        type="button"
+                        onClick={() => toggleEditMode(index)}
+                        className="btn-action"
+                      >
+                        {field.isEditing ? "Save" : "Edit"}
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => deleteField(index)}
+                        className="btn-action"
+                      >
+                        Delete
+                      </button>
                     </div>
-                  )}
-
-                  {/* ----------------- Actions ----------------- */}
-                  <div style={{ marginTop: "10px" }}>
-                    <button
-                      type="button"
-                      onClick={() => toggleEditMode(index)}
-                      style={{
-                        background: "#007bff",
-                        color: "white",
-                        border: "none",
-                        padding: "5px 10px",
-                        borderRadius: "5px",
-                        marginRight: "10px",
-                      }}
-                    >
-                      {field.isEditing ? "✅ Save" : "✏️ Edit"}
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => deleteField(index)}
-                      style={{
-                        background: "red",
-                        color: "white",
-                        border: "none",
-                        padding: "5px 10px",
-                        borderRadius: "5px",
-                      }}
-                    >
-                      Delete
-                    </button>
                   </div>
 
-                  <hr style={{ margin: "15px 0" }} />
+                  <hr className="divider" />
 
-                  {/* ----------------- Live Preview ----------------- */}
+                  {/* Live Preview */}
                   {!field.isEditing && (
-                    <>
+                    <div className="field-preview">
                       {field.type === "select" && (
                         <select name={name} required={field.required}>
                           <option value="">
@@ -241,7 +203,7 @@ export default function DynamicFormUploader() {
 
                       {field.type === "radio" &&
                         field.options?.map((opt, i) => (
-                          <label key={i} style={{ marginLeft: "10px" }}>
+                          <label key={i} className="option-label">
                             <input
                               type="radio"
                               name={name}
@@ -254,7 +216,7 @@ export default function DynamicFormUploader() {
 
                       {field.type === "checkbox" &&
                         field.options?.map((opt, i) => (
-                          <label key={i} style={{ display: "block" }}>
+                          <label key={i} className="option-label-block">
                             <input type="checkbox" name={name} value={opt} />
                             {opt}
                           </label>
@@ -270,15 +232,16 @@ export default function DynamicFormUploader() {
                           required={field.required}
                         />
                       )}
-                    </>
+                    </div>
                   )}
                 </div>
               );
             })}
-            <button type="button" onClick={addField}>
+
+            <button type="button" onClick={addField} className="btn-add">
               ➕ Add Field
             </button>
-            <button type="submit" style={{ marginLeft: "10px" }}>
+            <button type="submit" className="btn-submit">
               Submit
             </button>
           </form>

@@ -1,0 +1,195 @@
+/* ---------------- Container ---------------- */
+.form-uploader {
+  padding: 30px;
+  max-width: 900px;
+  margin: 40px auto;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  background: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+/* ---------------- Headings ---------------- */
+.form-uploader h1 {
+  font-size: 28px;
+  margin-bottom: 25px;
+  font-weight: 700;
+  text-align: center;
+  color: #222;
+}
+
+.form-uploader h2 {
+  font-size: 22px;
+  margin-bottom: 20px;
+  font-weight: 600;
+  color: #444;
+}
+
+/* ---------------- File Input ---------------- */
+.file-input {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 25px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.file-input:hover {
+  border-color: #888;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+}
+
+/* ---------------- Field Card ---------------- */
+.field-card {
+  margin-bottom: 25px;
+  border: 1px solid #e0e0e0;
+  padding: 20px;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+  transition: all 0.2s ease;
+}
+
+.field-card:hover {
+  box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+}
+
+/* ---------------- Field Content ---------------- */
+.field-content {
+  display: flex;
+  flex-direction: column; /* stack by default */
+  gap: 12px;
+}
+
+/* ---------------- Edit Fields Group ---------------- */
+.edit-fields {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ---------------- Form Inputs ---------------- */
+.field-card input[type="text"],
+.field-card input[type="number"],
+.field-card input[type="email"],
+.field-card input[type="password"],
+.field-card select {
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.field-card input:focus,
+.field-card select:focus {
+  outline: none;
+  border-color: #007BFF;
+  box-shadow: 0 0 5px rgba(0,123,255,0.2);
+}
+
+/* ---------------- Field Actions ---------------- */
+.field-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.btn-action {
+  background: #f0f0f0;
+  border: none;
+  color: #555;
+  cursor: pointer;
+  font-weight: 500;
+  padding: 6px 12px;
+  font-size: 14px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.btn-action:hover {
+  background: #007BFF;
+  color: #fff;
+}
+
+/* ---------------- Add & Submit Buttons ---------------- */
+.btn-add,
+.btn-submit {
+  padding: 10px 18px;
+  margin-right: 12px;
+  border: none;
+  background: #007BFF;
+  color: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.btn-add:hover,
+.btn-submit:hover {
+  background: #0056b3;
+}
+
+/* ---------------- Option Labels ---------------- */
+.option-label,
+.option-label-block {
+  font-size: 14px;
+  margin-left: 8px;
+}
+
+.option-label-block {
+  display: block;
+  margin-bottom: 6px;
+}
+
+/* ---------------- Divider ---------------- */
+.divider {
+  margin: 15px 0;
+  border: none;
+  border-top: 1px solid #e0e0e0;
+}
+
+/* ---------------- Live Preview ---------------- */
+.field-preview {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ---------------- Responsive ---------------- */
+@media (min-width: 600px) {
+  .field-content {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .edit-fields {
+    flex: 1;
+    min-width: 250px;
+  }
+}
+
+@media (max-width: 500px) {
+  .btn-add,
+  .btn-submit {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+}
