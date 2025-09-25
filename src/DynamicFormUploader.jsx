@@ -93,75 +93,87 @@ export default function DynamicFormUploader() {
               return (
                 <div key={index} className="field-card">
                   <div className="field-content">
-                    {field.isEditing ? (
-                      <div className="edit-fields">
-                        <input
-                          type="text"
-                          value={field.label}
-                          placeholder="Field Label"
-                          onChange={(e) =>
-                            updateField(index, "label", e.target.value)
-                          }
-                        />
-                        <input
-                          type="text"
-                          value={field.placeholder || ""}
-                          placeholder="Placeholder"
-                          onChange={(e) =>
-                            updateField(index, "placeholder", e.target.value)
-                          }
-                        />
-                        <select
-                          value={field.type}
-                          onChange={(e) =>
-                            updateField(index, "type", e.target.value)
-                          }
-                        >
-                          <option value="text">Text</option>
-                          <option value="number">Number</option>
-                          <option value="email">Email</option>
-                          <option value="password">Password</option>
-                          <option value="select">Select</option>
-                          <option value="radio">Radio</option>
-                          <option value="checkbox">Checkbox</option>
-                        </select>
+                 {field.isEditing ? (
+  <div className="edit-fields">
+    <div className="edit-row">
+      <label>Label:</label>
+      <input
+        type="text"
+        value={field.label}
+        placeholder="Field Label"
+        onChange={(e) => updateField(index, "label", e.target.value)}
+      />
+    </div>
 
-                        {(field.type === "select" ||
-                          field.type === "radio" ||
-                          field.type === "checkbox") && (
-                          <input
-                            type="text"
-                            value={field.options?.join(", ") || ""}
-                            placeholder="Options (comma separated)"
-                            onChange={(e) =>
-                              updateField(
-                                index,
-                                "options",
-                                e.target.value
-                                  .split(",")
-                                  .map((o) => o.trim())
-                                  .filter(Boolean)
-                              )
-                            }
-                          />
-                        )}
+    <div className="edit-row">
+      <label>Placeholder:</label>
+      <input
+        type="text"
+        value={field.placeholder || ""}
+        placeholder="Placeholder"
+        onChange={(e) => updateField(index, "placeholder", e.target.value)}
+      />
+    </div>
 
-                        <label>
-                          <input
-                            type="checkbox"
-                            checked={field.required || false}
-                            onChange={(e) =>
-                              updateField(index, "required", e.target.checked)
-                            }
-                          />{" "}
-                          Required
-                        </label>
-                      </div>
-                    ) : (
-                      <div className="preview-field">
-                        <strong>{field.label}</strong>
-                      </div>
-                    )}
+    <div className="edit-row">
+      <label>Type:</label>
+      <select
+        value={field.type}
+        onChange={(e) => updateField(index, "type", e.target.value)}
+      >
+        <option value="text">Text</option>
+        <option value="number">Number</option>
+        <option value="email">Email</option>
+        <option value="password">Password</option>
+        <option value="select">Select</option>
+          <option value="date">Date</option>
+        <option value="radio">Radio</option>
+        <option value="checkbox">Checkbox</option>
+      </select>
+    </div>
+
+    {(field.type === "select" ||
+      field.type === "radio" ||
+      field.type === "checkbox") && (
+      <div className="edit-row">
+        <label>Options (comma separated):</label>
+        <input
+          type="text"
+          value={field.options?.join(", ") || ""}
+          placeholder="Option1, Option2, Option3"
+          onChange={(e) =>
+            updateField(
+              index,
+              "options",
+              e.target.value
+                .split(",")
+                .map((o) => o.trim())
+                .filter(Boolean)
+            )
+          }
+        />
+      </div>
+    )}
+
+    <div className="edit-row">
+      <label>
+        <input
+          type="checkbox"
+          checked={field.required || false}
+          onChange={(e) =>
+            updateField(index, "required", e.target.checked)
+          }
+        />{" "}
+        Required
+      </label>
+    </div>
+  </div>
+) : (
+  <div className="preview-field">
+    <strong>{field.label}</strong>
+  </div>
+)}
+
 
                     {/* Actions */}
                     <div className="field-actions">
@@ -222,7 +234,7 @@ export default function DynamicFormUploader() {
                           </label>
                         ))}
 
-                      {["text", "number", "email", "password"].includes(
+                      {["text", "number", "email", "password","date"].includes(
                         field.type
                       ) && (
                         <input
