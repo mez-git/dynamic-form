@@ -49,7 +49,8 @@ export default function DynamicFormUploader() {
             ...f,
             options: f.options || [],
             isEditing: false,
-            isNew: false, // Mark as preloaded JSON field
+            isNew: false, // Preloaded JSON
+            original: { ...f }, // store original value for revert
           }))
         );
       } catch (err) {
@@ -62,9 +63,8 @@ export default function DynamicFormUploader() {
 
   // ----------------- Export JSON -----------------
   const handleExportJSON = () => {
-    const cleanedFields = fields.map(({ isEditing, isNew, ...rest }) => {
+    const cleanedFields = fields.map(({ isEditing, isNew, original, ...rest }) => {
       const field = {};
-
       if (rest.label) field.label = rest.label;
       if (rest.placeholder) field.placeholder = rest.placeholder;
       if (rest.type) field.type = rest.type;
@@ -72,7 +72,6 @@ export default function DynamicFormUploader() {
       if (rest.options && rest.options.length > 0) {
         field.options = rest.options;
       }
-
       return field;
     });
 
@@ -100,7 +99,7 @@ export default function DynamicFormUploader() {
     const field = updated[index];
 
     if (field.isEditing) {
-      // Validation checks
+      // Validation
       if (!field.label?.trim()) {
         alert("Please add a label before saving!");
         if (field.isNew) deleteField(index);
@@ -144,9 +143,23 @@ export default function DynamicFormUploader() {
         required: false,
         options: [],
         isEditing: true,
-        isNew: true, // mark as newly added field
+        isNew: true,
       },
     ]);
+  };
+
+  const cancelEdit = (index) => {
+    const updated = [...fields];
+    const field = updated[index];
+
+    if (field.isNew) {
+      // Remove new field
+      deleteField(index);
+    } else {
+      // Revert to original value
+      updated[index] = { ...field.original, isEditing: false, isNew: false, original: field.original };
+      setFields(updated);
+    }
   };
 
   const handleSubmit = (e) => {
@@ -259,9 +272,12 @@ export default function DynamicFormUploader() {
                       >
                         {field.isEditing ? "Save" : "Edit"}
                       </button>
-
-                      <button type="button" onClick={() => deleteField(index)} className="btn-action">
-                        Delete
+                      <button
+                        type="button"
+                        onClick={() => cancelEdit(index)}
+                        className="btn-action btn-cross"
+                      >
+                        ❌
                       </button>
                     </div>
                   </div>
