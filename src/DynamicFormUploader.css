@@ -104,6 +104,29 @@
   flex-wrap: wrap;
   margin-top: 10px;
 }
+.instructions {
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+}
+
+.instructions h2 {
+  margin-top: 0;
+}
+
+.instructions ul {
+  padding-left: 20px;
+}
+
+.instructions pre.json-sample {
+  background: #272822;
+  color: #f8f8f2;
+  padding: 10px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
 
 .btn-action {
   background: #f0f0f0;

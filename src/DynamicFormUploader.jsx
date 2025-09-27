@@ -1,13 +1,17 @@
-import React, { useState ,useEffect,useRef} from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./DynamicFormUploader.css";
 
 export default function DynamicFormUploader() {
   const [fields, setFields] = useState([]);
+  const [showInstructions, setShowInstructions] = useState(false);
   const lastFieldRef = useRef(null);
 
-    useEffect(() => {
+  useEffect(() => {
     if (lastFieldRef.current) {
-      lastFieldRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+      lastFieldRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
     }
   }, [fields]);
 
@@ -29,7 +33,9 @@ export default function DynamicFormUploader() {
           const field = jsonData[i];
 
           if (!field.label || !field.type) {
-            alert(`Field at index ${i} is missing required values (label or type).`);
+            alert(
+              `Field at index ${i} is missing required values (label or type).`
+            );
             return;
           }
 
@@ -37,15 +43,21 @@ export default function DynamicFormUploader() {
             ["text", "number", "email", "password"].includes(field.type) &&
             !field.placeholder
           ) {
-            alert(`Field "${field.label}" (index ${i}) requires a placeholder.`);
+            alert(
+              `Field "${field.label}" (index ${i}) requires a placeholder.`
+            );
             return;
           }
 
           if (
             ["select", "radio", "checkbox"].includes(field.type) &&
-            (!field.options || !Array.isArray(field.options) || field.options.length === 0)
+            (!field.options ||
+              !Array.isArray(field.options) ||
+              field.options.length === 0)
           ) {
-            alert(`Field "${field.label}" (index ${i}) requires options but none were provided.`);
+            alert(
+              `Field "${field.label}" (index ${i}) requires options but none were provided.`
+            );
             return;
           }
         }
@@ -55,8 +67,8 @@ export default function DynamicFormUploader() {
             ...f,
             options: f.options || [],
             isEditing: false,
-            isNew: false, 
-            original: { ...f }, 
+            isNew: false,
+            original: { ...f },
           }))
         );
       } catch (err) {
@@ -67,19 +79,20 @@ export default function DynamicFormUploader() {
     reader.readAsText(file);
   };
 
-
   const handleExportJSON = () => {
-    const cleanedFields = fields.map(({ isEditing, isNew, original, ...rest }) => {
-      const field = {};
-      if (rest.label) field.label = rest.label;
-      if (rest.placeholder) field.placeholder = rest.placeholder;
-      if (rest.type) field.type = rest.type;
-      if (rest.required) field.required = true;
-      if (rest.options && rest.options.length > 0) {
-        field.options = rest.options;
+    const cleanedFields = fields.map(
+      ({ isEditing, isNew, original, ...rest }) => {
+        const field = {};
+        if (rest.label) field.label = rest.label;
+        if (rest.placeholder) field.placeholder = rest.placeholder;
+        if (rest.type) field.type = rest.type;
+        if (rest.required) field.required = true;
+        if (rest.options && rest.options.length > 0) {
+          field.options = rest.options;
+        }
+        return field;
       }
-      return field;
-    });
+    );
 
     const jsonData = JSON.stringify(cleanedFields, null, 2);
     const blob = new Blob([jsonData], { type: "application/json" });
@@ -87,12 +100,13 @@ export default function DynamicFormUploader() {
 
     const link = document.createElement("a");
     link.href = url;
-    link.download = `dynamic-form-${new Date().toISOString().slice(0, 10)}.json`;
+    link.download = `dynamic-form-${new Date()
+      .toISOString()
+      .slice(0, 10)}.json`;
     link.click();
 
     URL.revokeObjectURL(url);
   };
-
 
   const updateField = (index, key, value) => {
     const updated = [...fields];
@@ -105,7 +119,6 @@ export default function DynamicFormUploader() {
     const field = updated[index];
 
     if (field.isEditing) {
-    
       if (!field.label?.trim()) {
         alert("Please add a label before saving!");
         if (field.isNew) deleteField(index);
@@ -159,11 +172,14 @@ export default function DynamicFormUploader() {
     const field = updated[index];
 
     if (field.isNew) {
-   
       deleteField(index);
     } else {
-    
-      updated[index] = { ...field.original, isEditing: false, isNew: false, original: field.original };
+      updated[index] = {
+        ...field.original,
+        isEditing: false,
+        isNew: false,
+        original: field.original,
+      };
       setFields(updated);
     }
   };
@@ -176,12 +192,11 @@ export default function DynamicFormUploader() {
     alert("Form submitted! Check console.");
   };
 
-
   return (
     <div className="form-uploader">
       <h1>Upload JSON & Generate Editable Form</h1>
 
-        {fields.length === 0 && (
+      {fields.length === 0 && (
         <input
           type="file"
           accept=".json"
@@ -190,18 +205,93 @@ export default function DynamicFormUploader() {
         />
       )}
 
-        <button type="button" onClick={addField} className="btn-add">
-              ➕ Add Field
-            </button>
+      <button type="button" onClick={addField} className="btn-add">
+        ➕ Add Field
+      </button>
+      <button
+        type="button"
+        onClick={() => setShowInstructions(!showInstructions)}
+        className="btn-add"
+      >
+        {showInstructions ? "Hide Instructions" : "Show Instructions"}
+      </button>
+
+      {showInstructions && (
+        <div className="instructions">
+          <h2>Instructions:</h2>
+          <ul>
+            <li>
+              You can upload a JSON file containing an array of form fields.
+            </li>
+            <li>
+              Each field object must have at least <code>label</code> and{" "}
+              <code>type</code>.
+            </li>
+            <li>
+              For input types like <code>text</code>, <code>email</code>,{" "}
+              <code>number</code>, add a <code>placeholder</code>.
+            </li>
+            <li>
+              For <code>select</code>, <code>radio</code>, and{" "}
+              <code>checkbox</code>, include an <code>options</code> array.
+            </li>
+            <li>
+              You can edit, add, or delete fields after uploading the JSON.
+            </li>
+            <li>
+              You can also{" "}
+              <strong>add fields manually before uploading any file</strong> by
+              clicking the "➕ Add Field" button.
+            </li>
+            <li>Once done, you can export your customized form JSON.</li>
+          </ul>
+
+          <h3>Sample JSON:</h3>
+          <pre className="json-sample">
+            {`[
+  {
+    "label": "Full Name",
+    "placeholder": "Enter your full name",
+    "type": "text",
+    "required": true
+  },
+  {
+    "label": "Email",
+    "placeholder": "Enter your email",
+    "type": "email",
+    "required": true
+  },
+  {
+    "label": "Favorite Color",
+    "type": "select",
+    "options": ["Red", "Green", "Blue"],
+    "required": false
+  },
+  {
+    "label": "Subscribe to newsletter",
+    "type": "checkbox",
+    "options": ["Yes"],
+    "required": false
+  }
+]`}
+          </pre>
+        </div>
+      )}
+
       {fields.length > 0 && (
         <div>
           <h2>Editable Form</h2>
           <form onSubmit={handleSubmit}>
             {fields.map((field, index) => {
-              const name = field.name || field.label.toLowerCase().replace(/\s+/g, "_");
+              const name =
+                field.name || field.label.toLowerCase().replace(/\s+/g, "_");
 
               return (
-                <div key={index} className="field-card"  ref={index === fields.length - 1 ? lastFieldRef : null}>
+                <div
+                  key={index}
+                  className="field-card"
+                  ref={index === fields.length - 1 ? lastFieldRef : null}
+                >
                   <div className="field-content">
                     {field.isEditing ? (
                       <div className="edit-fields">
@@ -211,7 +301,9 @@ export default function DynamicFormUploader() {
                             type="text"
                             value={field.label}
                             placeholder="Field Label"
-                            onChange={(e) => updateField(index, "label", e.target.value)}
+                            onChange={(e) =>
+                              updateField(index, "label", e.target.value)
+                            }
                           />
                         </div>
 
@@ -221,7 +313,9 @@ export default function DynamicFormUploader() {
                             type="text"
                             value={field.placeholder || ""}
                             placeholder="Placeholder"
-                            onChange={(e) => updateField(index, "placeholder", e.target.value)}
+                            onChange={(e) =>
+                              updateField(index, "placeholder", e.target.value)
+                            }
                           />
                         </div>
 
@@ -229,7 +323,9 @@ export default function DynamicFormUploader() {
                           <label>Type:</label>
                           <select
                             value={field.type}
-                            onChange={(e) => updateField(index, "type", e.target.value)}
+                            onChange={(e) =>
+                              updateField(index, "type", e.target.value)
+                            }
                           >
                             <option value="text">Text</option>
                             <option value="number">Number</option>
@@ -242,7 +338,9 @@ export default function DynamicFormUploader() {
                           </select>
                         </div>
 
-                        {["select", "radio", "checkbox"].includes(field.type) && (
+                        {["select", "radio", "checkbox"].includes(
+                          field.type
+                        ) && (
                           <div className="edit-row">
                             <label>Options (comma separated):</label>
                             <input
@@ -268,7 +366,9 @@ export default function DynamicFormUploader() {
                             <input
                               type="checkbox"
                               checked={field.required || false}
-                              onChange={(e) => updateField(index, "required", e.target.checked)}
+                              onChange={(e) =>
+                                updateField(index, "required", e.target.checked)
+                              }
                             />{" "}
                             Required
                           </label>
@@ -281,7 +381,6 @@ export default function DynamicFormUploader() {
                     )}
 
                     <div className="field-actions">
-                  
                       <button
                         type="button"
                         onClick={() => toggleEditMode(index)}
@@ -300,7 +399,6 @@ export default function DynamicFormUploader() {
                         </button>
                       )}
 
-                   
                       <button
                         type="button"
                         onClick={() => deleteField(index)}
@@ -317,7 +415,9 @@ export default function DynamicFormUploader() {
                     <div className="field-preview">
                       {field.type === "select" && (
                         <select name={name} required={field.required}>
-                          <option value="">{field.placeholder || "Select an option"}</option>
+                          <option value="">
+                            {field.placeholder || "Select an option"}
+                          </option>
                           {field.options?.map((opt, i) => (
                             <option key={i} value={opt}>
                               {opt}
@@ -329,7 +429,12 @@ export default function DynamicFormUploader() {
                       {field.type === "radio" &&
                         field.options?.map((opt, i) => (
                           <label key={i} className="option-label">
-                            <input type="radio" name={name} value={opt} required={field.required} />
+                            <input
+                              type="radio"
+                              name={name}
+                              value={opt}
+                              required={field.required}
+                            />
                             {opt}
                           </label>
                         ))}
@@ -342,7 +447,9 @@ export default function DynamicFormUploader() {
                           </label>
                         ))}
 
-                      {["text", "number", "email", "password", "date"].includes(field.type) && (
+                      {["text", "number", "email", "password", "date"].includes(
+                        field.type
+                      ) && (
                         <input
                           type={field.type}
                           name={name}
@@ -356,11 +463,14 @@ export default function DynamicFormUploader() {
               );
             })}
 
-    
             <button type="submit" className="btn-submit">
               Submit
             </button>
-            <button type="button" onClick={handleExportJSON} className="btn-export">
+            <button
+              type="button"
+              onClick={handleExportJSON}
+              className="btn-export"
+            >
               ⬇️ Export JSON
             </button>
           </form>
