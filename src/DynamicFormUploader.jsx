@@ -1,9 +1,15 @@
-import React, { useState } from "react";
+import React, { useState ,useEffect,useRef} from "react";
 import "./DynamicFormUploader.css";
 
 export default function DynamicFormUploader() {
   const [fields, setFields] = useState([]);
+  const lastFieldRef = useRef(null);
 
+    useEffect(() => {
+    if (lastFieldRef.current) {
+      lastFieldRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [fields]);
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
@@ -175,7 +181,15 @@ export default function DynamicFormUploader() {
     <div className="form-uploader">
       <h1>Upload JSON & Generate Editable Form</h1>
 
-      <input type="file" accept=".json" onChange={handleFileUpload} className="file-input" />
+        {fields.length === 0 && (
+        <input
+          type="file"
+          accept=".json"
+          onChange={handleFileUpload}
+          className="file-input"
+        />
+      )}
+
         <button type="button" onClick={addField} className="btn-add">
               ➕ Add Field
             </button>
@@ -187,7 +201,7 @@ export default function DynamicFormUploader() {
               const name = field.name || field.label.toLowerCase().replace(/\s+/g, "_");
 
               return (
-                <div key={index} className="field-card">
+                <div key={index} className="field-card"  ref={index === fields.length - 1 ? lastFieldRef : null}>
                   <div className="field-content">
                     {field.isEditing ? (
                       <div className="edit-fields">
