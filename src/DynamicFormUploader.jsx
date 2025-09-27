@@ -4,7 +4,7 @@ import "./DynamicFormUploader.css";
 export default function DynamicFormUploader() {
   const [fields, setFields] = useState([]);
 
- 
+  // ----------------- File Upload -----------------
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -15,7 +15,7 @@ export default function DynamicFormUploader() {
         const jsonData = JSON.parse(event.target.result);
 
         if (!Array.isArray(jsonData)) {
-          alert(" JSON must be an array of objects.");
+          alert("JSON must be an array of objects.");
           return;
         }
 
@@ -23,7 +23,7 @@ export default function DynamicFormUploader() {
           const field = jsonData[i];
 
           if (!field.label || !field.type) {
-            alert(` Field at index ${i} is missing required values (label or type).`);
+            alert(`Field at index ${i} is missing required values (label or type).`);
             return;
           }
 
@@ -31,7 +31,7 @@ export default function DynamicFormUploader() {
             ["text", "number", "email", "password"].includes(field.type) &&
             !field.placeholder
           ) {
-            alert(` Field "${field.label}" (index ${i}) requires a placeholder.`);
+            alert(`Field "${field.label}" (index ${i}) requires a placeholder.`);
             return;
           }
 
@@ -39,29 +39,30 @@ export default function DynamicFormUploader() {
             ["select", "radio", "checkbox"].includes(field.type) &&
             (!field.options || !Array.isArray(field.options) || field.options.length === 0)
           ) {
-            alert(` Field "${field.label}" (index ${i}) requires options but none were provided.`);
+            alert(`Field "${field.label}" (index ${i}) requires options but none were provided.`);
             return;
           }
         }
 
- 
         setFields(
           jsonData.map((f) => ({
             ...f,
             options: f.options || [],
             isEditing: false,
+            isNew: false, // Mark as preloaded JSON field
           }))
         );
       } catch (err) {
-        alert(" Invalid JSON file!");
+        alert("Invalid JSON file!");
       }
     };
 
     reader.readAsText(file);
   };
 
+  // ----------------- Export JSON -----------------
   const handleExportJSON = () => {
-    const cleanedFields = fields.map(({ isEditing, ...rest }) => {
+    const cleanedFields = fields.map(({ isEditing, isNew, ...rest }) => {
       const field = {};
 
       if (rest.label) field.label = rest.label;
@@ -87,6 +88,7 @@ export default function DynamicFormUploader() {
     URL.revokeObjectURL(url);
   };
 
+  // ----------------- Field Updates -----------------
   const updateField = (index, key, value) => {
     const updated = [...fields];
     updated[index] = { ...updated[index], [key]: value };
@@ -98,10 +100,10 @@ export default function DynamicFormUploader() {
     const field = updated[index];
 
     if (field.isEditing) {
-  
+      // Validation checks
       if (!field.label?.trim()) {
         alert("Please add a label before saving!");
-        setTimeout(() => deleteField(index), 0);
+        if (field.isNew) deleteField(index);
         return;
       }
 
@@ -110,7 +112,7 @@ export default function DynamicFormUploader() {
         !field.placeholder?.trim()
       ) {
         alert("Please add a placeholder before saving!");
-        setTimeout(() => deleteField(index), 0);
+        if (field.isNew) deleteField(index);
         return;
       }
 
@@ -119,7 +121,7 @@ export default function DynamicFormUploader() {
         (!field.options || field.options.length === 0)
       ) {
         alert("Please provide options for this field!");
-        setTimeout(() => deleteField(index), 0);
+        if (field.isNew) deleteField(index);
         return;
       }
     }
@@ -128,11 +130,9 @@ export default function DynamicFormUploader() {
     setFields(updated);
   };
 
-
   const deleteField = (index) => {
     setFields(fields.filter((_, i) => i !== index));
   };
-
 
   const addField = () => {
     setFields([
@@ -144,10 +144,10 @@ export default function DynamicFormUploader() {
         required: false,
         options: [],
         isEditing: true,
+        isNew: true, // mark as newly added field
       },
     ]);
   };
-
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -157,16 +157,12 @@ export default function DynamicFormUploader() {
     alert("Form submitted! Check console.");
   };
 
+  // ----------------- Render -----------------
   return (
     <div className="form-uploader">
       <h1>Upload JSON & Generate Editable Form</h1>
 
-      <input
-        type="file"
-        accept=".json"
-        onChange={handleFileUpload}
-        className="file-input"
-      />
+      <input type="file" accept=".json" onChange={handleFileUpload} className="file-input" />
 
       {fields.length > 0 && (
         <div>
