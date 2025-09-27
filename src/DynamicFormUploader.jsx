@@ -176,7 +176,9 @@ export default function DynamicFormUploader() {
       <h1>Upload JSON & Generate Editable Form</h1>
 
       <input type="file" accept=".json" onChange={handleFileUpload} className="file-input" />
-
+        <button type="button" onClick={addField} className="btn-add">
+              ➕ Add Field
+            </button>
       {fields.length > 0 && (
         <div>
           <h2>Editable Form</h2>
@@ -340,9 +342,7 @@ export default function DynamicFormUploader() {
               );
             })}
 
-            <button type="button" onClick={addField} className="btn-add">
-              ➕ Add Field
-            </button>
+    
             <button type="submit" className="btn-submit">
               Submit
             </button>
