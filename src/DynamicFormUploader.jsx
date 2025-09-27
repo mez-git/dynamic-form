@@ -4,7 +4,7 @@ import "./DynamicFormUploader.css";
 export default function DynamicFormUploader() {
   const [fields, setFields] = useState([]);
 
-  // ----------------- File Upload -----------------
+
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -49,8 +49,8 @@ export default function DynamicFormUploader() {
             ...f,
             options: f.options || [],
             isEditing: false,
-            isNew: false, // Preloaded JSON
-            original: { ...f }, // store original value for revert
+            isNew: false, 
+            original: { ...f }, 
           }))
         );
       } catch (err) {
@@ -61,7 +61,7 @@ export default function DynamicFormUploader() {
     reader.readAsText(file);
   };
 
-  // ----------------- Export JSON -----------------
+
   const handleExportJSON = () => {
     const cleanedFields = fields.map(({ isEditing, isNew, original, ...rest }) => {
       const field = {};
@@ -87,7 +87,7 @@ export default function DynamicFormUploader() {
     URL.revokeObjectURL(url);
   };
 
-  // ----------------- Field Updates -----------------
+
   const updateField = (index, key, value) => {
     const updated = [...fields];
     updated[index] = { ...updated[index], [key]: value };
@@ -99,7 +99,7 @@ export default function DynamicFormUploader() {
     const field = updated[index];
 
     if (field.isEditing) {
-      // Validation
+    
       if (!field.label?.trim()) {
         alert("Please add a label before saving!");
         if (field.isNew) deleteField(index);
@@ -153,10 +153,10 @@ export default function DynamicFormUploader() {
     const field = updated[index];
 
     if (field.isNew) {
-      // Remove new field
+   
       deleteField(index);
     } else {
-      // Revert to original value
+    
       updated[index] = { ...field.original, isEditing: false, isNew: false, original: field.original };
       setFields(updated);
     }
@@ -170,7 +170,7 @@ export default function DynamicFormUploader() {
     alert("Form submitted! Check console.");
   };
 
-  // ----------------- Render -----------------
+
   return (
     <div className="form-uploader">
       <h1>Upload JSON & Generate Editable Form</h1>
@@ -265,6 +265,7 @@ export default function DynamicFormUploader() {
                     )}
 
                     <div className="field-actions">
+                  
                       <button
                         type="button"
                         onClick={() => toggleEditMode(index)}
@@ -272,12 +273,24 @@ export default function DynamicFormUploader() {
                       >
                         {field.isEditing ? "Save" : "Edit"}
                       </button>
+
+                      {field.isEditing && (
+                        <button
+                          type="button"
+                          onClick={() => cancelEdit(index)}
+                          className="btn-action btn-cross"
+                        >
+                          CANCEL
+                        </button>
+                      )}
+
+                   
                       <button
                         type="button"
-                        onClick={() => cancelEdit(index)}
-                        className="btn-action btn-cross"
+                        onClick={() => deleteField(index)}
+                        className="btn-action btn-delete"
                       >
-                        ❌
+                        Delete Field
                       </button>
                     </div>
                   </div>
